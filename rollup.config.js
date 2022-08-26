@@ -1,28 +1,10 @@
 import Alias from '@rollup/plugin-alias';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
-import Replace from '@rollup/plugin-replace';
 import Typescript from '@rollup/plugin-typescript';
-import Autoprefixer from 'autoprefixer';
-import Postcss from 'postcss';
 import Cleanup from 'rollup-plugin-cleanup';
 import {terser as Terser} from 'rollup-plugin-terser';
-import Sass from 'sass';
 
-import Package from './package.json';
-
-async function compileCss() {
-	const css = Sass.renderSync({
-		file: 'src/sass/plugin.scss',
-		outputStyle: 'compressed',
-	}).css.toString();
-
-	const result = await Postcss([Autoprefixer]).process(css, {
-		from: undefined,
-	});
-	return result.css.replace(/'/g, "\\'").trim();
-}
-
-function getPlugins(css, shouldMinify) {
+function getPlugins(shouldMinify) {
 	const plugins = [
 		// Use ES6 source files to avoid CommonJS transpiling
 		Alias({
@@ -37,10 +19,6 @@ function getPlugins(css, shouldMinify) {
 			tsconfig: 'src/tsconfig.json',
 		}),
 		nodeResolve(),
-		Replace({
-			__css__: css,
-			preventAssignment: false,
-		}),
 	];
 	if (shouldMinify) {
 		plugins.push(Terser());
@@ -54,34 +32,11 @@ function getPlugins(css, shouldMinify) {
 	];
 }
 
-function getDistName(packageName) {
-	// `@tweakpane/plugin-foobar` -> `tweakpane-plugin-foobar`
-	// `tweakpane-plugin-foobar`  -> `tweakpane-plugin-foobar`
-	return packageName
-		.split(/[@/-]/)
-		.reduce((comps, comp) => (comp !== '' ? [...comps, comp] : comps), [])
-		.join('-');
-}
-
-function getUmdName(packageName) {
-	// `@tweakpane/plugin-foobar` -> `TweakpaneFoobarPlugin`
-	// `tweakpane-plugin-foobar`  -> `TweakpaneFoobarPlugin`
-	return (
-		packageName
-			.split(/[@/-]/)
-			.map((comp) =>
-				comp !== 'plugin' ? comp.charAt(0).toUpperCase() + comp.slice(1) : '',
-			)
-			.join('') + 'Plugin'
-	);
-}
-
 export default async () => {
 	const production = process.env.BUILD === 'production';
 	const postfix = production ? '.min' : '';
 
-	const distName = getDistName(Package.name);
-	const css = await compileCss();
+	const distName = 'tweakpane-plugin-grouplist';
 	return {
 		input: 'src/index.ts',
 		external: ['tweakpane'],
@@ -91,9 +46,9 @@ export default async () => {
 			globals: {
 				tweakpane: 'Tweakpane',
 			},
-			name: getUmdName(Package.name),
+			name: 'TweakpaneGrouplistPlugin',
 		},
-		plugins: getPlugins(css, production),
+		plugins: getPlugins(production),
 
 		// Suppress `Circular dependency` warning
 		onwarn(warning, rollupWarn) {

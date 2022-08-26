@@ -1,0 +1,1 @@
+export {GrouplistBladePlugin} from './plugin';

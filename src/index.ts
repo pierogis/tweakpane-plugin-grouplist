@@ -1,4 +1,9 @@
-import {TemplateInputPlugin} from './plugin';
+import {TpPlugin} from '@tweakpane/core';
 
-// Export your plugin(s) as constant `plugins`
-export const plugins = [TemplateInputPlugin];
+import {GrouplistBladePlugin} from './blade';
+import {GrouplistStringInputPlugin} from './input';
+
+export const plugins: TpPlugin[] = [
+	GrouplistBladePlugin,
+	GrouplistStringInputPlugin,
+];

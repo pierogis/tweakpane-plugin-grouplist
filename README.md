@@ -1,38 +1,5 @@
-# Tweakpane plugin template
-Plugin template of an input binding for [Tweakpane][tweakpane].
-
-
-# For plugin developers
-TODO: Delete this section before publishing your plugin.
-
-
-## Quick start
-- Install dependencies:
-  ```
-  % npm install
-  ```
-- Build source codes and watch changes:
-  ```
-  % npm start
-  ```
-- Open `test/browser.html` to see the result.
-
-
-## File structure
-```
-|- src
-|  |- sass ............ Plugin CSS
-|  |- index.ts ........ Entrypoint
-|  |- plugin.ts ....... Plugin
-|  |- controller.ts ... Controller for the custom view
-|  `- view.ts ......... Custom view
-|- dist ............... Compiled files
-`- test
-   `- browser.html .... Plugin labo
-```
-
-
-# For plugin users
+# tweakpane-plugin-grouplist
+plugin to use option groups in select dropdown for [Tweakpane][tweakpane].
 
 
 ## Installation
@@ -41,10 +8,10 @@ TODO: Delete this section before publishing your plugin.
 ### Browser
 ```html
 <script src="tweakpane.min.js"></script>
-<script src="tweakpane-plugin-template.min.js"></script>
+<script src="tweakpane-plugin-grouplist.min.js"></script>
 <script>
   const pane = new Tweakpane.Pane();
-  pane.registerPlugin(TweakpaneTemplatePlugin);
+  pane.registerPlugin(TweakpaneGrouplistPlugin);
 </script>
 ```
 
@@ -52,22 +19,81 @@ TODO: Delete this section before publishing your plugin.
 ### Package
 ```js
 import {Pane} from 'tweakpane';
-import * as TemplatePlugin from 'tweakpane-plugin-template';
+import * as GrouplistPlugin from '@pierogis/tweakpane-plugin-grouplist';
 
 const pane = new Pane();
-pane.registerPlugin(TemplatePlugin);
+pane.registerPlugin(GrouplistPlugin);
 ```
 
 
 ## Usage
 ```js
+// use nested objects to define option group labels, option names, and option values
+const objectOptgroups = {
+  [group1Name]: {
+    [group1Option1Name]: group1Option1Value,
+    [group1Option2Name]: group1Option2Value
+  },
+  [group2Name]: {
+    [group2Option1Name]: group2Option1Value,
+    [group2Option2Name]: group2Option2Value
+  }
+}
+
+// available as blade
+pane.addBlade({
+  view: 'grouplist',
+  value: group1Option1Value,
+  optgroups: objectOptgroups,
+  label: 'selected'
+})
+
 const params = {
-  prop: 3,
+  'selected': group1Option1Value,
 };
 
-// TODO: Update parameters for your plugin
-pane.addInput(params, 'prop', {
-  view: 'dots',
+// or input
+pane.addInput(params, 'selected', {
+  view: 'grouplist',
+  optgroups: objectOptgroups
+}).on('change', (ev) => {
+  console.log(ev.value);
+});
+
+// OR
+
+// use nested objects to define option group labels, option names, and option values
+const arrayOptgroups = [
+  {
+    text: group1Name,
+    value: [
+      {text: 'group 1 option 1', value: group1Option1Value},
+      {text: 'group 1 option 2', value: group1Option2Value}
+    ]
+  },
+  {
+    text: group2Name,
+    value: [
+      {text: 'group 2 option 1', value: group2Option1Value},
+      {text: 'group 2 option 2', value: group2Option2Value}
+    ]
+  }
+]
+
+pane.addBlade({
+  view: 'grouplist',
+  value: group1Option1Value,
+  optgroups: arrayOptgroups,
+  label: 'selected'
+})
+
+const params = {
+  'selected': group1Option1Value,
+};
+
+pane.addInput(params, 'selected', {
+  view: 'grouplist',
+  optgroups: arrayOptgroups
 }).on('change', (ev) => {
   console.log(ev.value);
 });

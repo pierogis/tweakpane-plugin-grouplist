@@ -1,0 +1,1 @@
+export {GrouplistStringInputPlugin} from './plugin';

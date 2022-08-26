@@ -3,22 +3,108 @@
 <head>
 	<meta charset="UTF-8">
 	<title></title>
+	<style>
+		body {
+			margin: 0;
+		}
+		.wrapper {
+			align-items: start;
+			background-color: #f1f2f3;
+			box-sizing: border-box;
+			display: grid;
+			gap: 32px;
+			grid-template-columns: repeat(auto-fit, 256px);
+			justify-content: center;
+			margin-left: auto;
+			margin-right: auto;
+			margin-top: 32px;
+			max-width: 960px;
+			padding: 64px;
+		}
+	</style>
 </head>
 <body>
+	<div class="wrapper">
+	</div>
 	<script src="../node_modules/tweakpane/dist/tweakpane.js"></script>
-	<script src="../dist/tweakpane-plugin-template.js"></script>
+	<script src="../dist/tweakpane-plugin-grouplist.js"></script>
 	<script>
+		const group1Name = 'group 1'
+		const group2Name = 'group 2'
+
+		const group1Option1Name = 'group 1 option 1'
+		const group1Option2Name = 'group 1 option 2'
+		const group2Option1Name = 'group 2 option 1'
+		const group2Option2Name = 'group 2 option 2'
+
+		const group1Option1Value = 'value for group 1 option 1'
+		const group1Option2Value = 'value for group 1 option 2'
+		const group2Option1Value = 'value for group 2 option 1'
+		const group2Option2Value = 'value for group 2 option 2'
+
 		const params = {
-			prop: 3,
+			'input object style': group1Option1Value,
+			'input array style': group1Option1Value,
 		};
-		const pane = new Tweakpane.Pane();
+		const pane = new Tweakpane.Pane({
+			container: document.querySelector('.wrapper'),
+			title: 'group list',
+		});
 
-		// Register plugin
-		pane.registerPlugin(TweakpaneTemplatePlugin);
+		pane.registerPlugin(TweakpaneGrouplistPlugin);
 
-		// TODO: Update parameters for your plugin
-		pane.addInput(params, 'prop', {
-			view: 'dots',
+		const objectOptgroups = {
+			[group1Name]: {
+				[group1Option1Name]: group1Option1Value,
+				[group1Option2Name]: group1Option2Value
+			},
+			[group2Name]: {
+				[group2Option1Name]: group2Option1Value,
+				[group2Option2Name]: group2Option2Value
+			}
+		}
+
+		const arrayOptgroups = [
+			{
+				text: group1Name,
+				value: [
+					{text: 'group 1 option 1', value: group1Option1Value},
+					{text: 'group 1 option 2', value: group1Option2Value}
+				]
+			},
+			{
+				text: group2Name,
+				value: [
+					{text: 'group 2 option 1', value: group2Option1Value},
+					{text: 'group 2 option 2', value: group2Option2Value}
+				]
+			}
+		]
+
+		pane.addBlade({
+			view: 'grouplist',
+			value: group1Option1Value,
+			optgroups: objectOptgroups,
+			label: 'blade object style'
+		})
+
+		pane.addBlade({
+			view: 'grouplist',
+			value: group1Option1Value,
+			optgroups: arrayOptgroups,
+			label: 'blade array style'
+		})
+
+		pane.addInput(params, 'input object style', {
+			view: 'grouplist',
+			optgroups: objectOptgroups
+		}).on('change', (ev) => {
+			console.log(ev.value);
+		});
+
+		pane.addInput(params, 'input array style', {
+			view: 'grouplist',
+			optgroups: arrayOptgroups
 		}).on('change', (ev) => {
 			console.log(ev.value);
 		});
