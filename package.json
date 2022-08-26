@@ -1,6 +1,6 @@
 {
 	"name": "@pierogis/tweakpane-plugin-grouplist",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"description": "grouped list plugin for Tweakpane",
 	"main": "dist/tweakpane-plugin-grouplist.js",
 	"types": "dist/types/index.d.ts",
