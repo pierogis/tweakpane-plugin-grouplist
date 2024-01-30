@@ -1,6 +1,7 @@
 import * as TP from '@tweakpane/core';
+import {Controller} from '@tweakpane/core';
 
-import {type GrouplistProps, GrouplistView} from './view';
+import {type GrouplistProps, GrouplistView} from './view.js';
 
 interface Config<T> {
 	props: TP.ValueMap<{
@@ -10,9 +11,7 @@ interface Config<T> {
 	viewProps: TP.ViewProps;
 }
 
-export class GrouplistController<T>
-	implements TP.ValueController<T, GrouplistView<T>>
-{
+export class GrouplistController<T> implements Controller<GrouplistView<T>> {
 	public readonly value: TP.Value<T>;
 	public readonly view: GrouplistView<T>;
 	public readonly props: GrouplistProps<T>;

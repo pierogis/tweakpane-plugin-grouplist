@@ -1,35 +1,36 @@
 import * as TP from '@tweakpane/core';
+import {MicroParser} from '@tweakpane/core';
+import {MicroParsers} from '@tweakpane/core/dist/common/micro-parsers.js';
 
-import {GrouplistConstraint} from './constraint';
+import {GrouplistConstraint} from './constraint.js';
 import type {
 	ArrayStyleGrouplistOptgroups,
 	GrouplistParamsOptgroups,
 	ObjectStyleGrouplistOptgroups,
-} from './params';
+} from './params.js';
 
-export function parseGrouplistOptgroups<T>(
-	value: unknown,
-): GrouplistParamsOptgroups<T> | undefined {
-	const p = TP.ParamsParsers;
-	if (Array.isArray(value)) {
-		return p.required.array(
-			p.required.object({
-				text: p.required.string,
-				value: p.required.array(
-					p.required.object({
-						text: p.required.string,
-						value: p.required.raw as TP.ParamsParser<T>,
-					}),
-				),
-			}),
-		)(value).value;
-	}
-	if (typeof value === 'object') {
-		return (
-			p.required.raw as TP.ParamsParser<ObjectStyleGrouplistOptgroups<T>>
-		)(value).value;
-	}
-	return undefined;
+export function parseGrouplistOptgroups<T>(p: typeof MicroParsers) {
+	return (value: unknown): GrouplistParamsOptgroups<T> | undefined => {
+		if (Array.isArray(value)) {
+			return p.required.array(
+				p.required.object({
+					text: p.required.string,
+					value: p.required.array(
+						p.required.object({
+							text: p.required.string,
+							value: p.required.raw as MicroParser<T>,
+						}),
+					),
+				}),
+			)(value).value;
+		}
+		if (typeof value === 'object') {
+			return (p.required.raw as MicroParser<ObjectStyleGrouplistOptgroups<T>>)(
+				value,
+			).value;
+		}
+		return undefined;
+	};
 }
 
 export function normalizeGrouplistOptgroups<T>(
@@ -64,7 +65,7 @@ export function createGrouplistConstraint<T>(
 	return !TP.isEmpty(optgroups)
 		? new GrouplistConstraint(
 				normalizeGrouplistOptgroups<T>(TP.forceCast(optgroups)),
-		  )
+			)
 		: null;
 }
 

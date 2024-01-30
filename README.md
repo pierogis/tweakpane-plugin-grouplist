@@ -18,7 +18,7 @@ plugin to use option groups in select dropdown for [Tweakpane][tweakpane].
 
 ### Package
 ```js
-import {Pane} from 'tweakpane';
+import { Pane } from 'tweakpane';
 import * as GrouplistPlugin from '@pierogis/tweakpane-plugin-grouplist';
 
 const pane = new Pane();

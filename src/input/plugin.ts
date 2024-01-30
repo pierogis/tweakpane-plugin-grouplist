@@ -1,12 +1,13 @@
 import * as TP from '@tweakpane/core';
+import {parseRecord} from '@tweakpane/core';
 
-import {GrouplistController} from '../common/controller';
-import type {GrouplistParamsOptgroups} from '../common/params';
+import {GrouplistController} from '../common/controller.js';
+import type {GrouplistParamsOptgroups} from '../common/params.js';
 import {
 	createGrouplistConstraint,
 	findGrouplistItems,
 	parseGrouplistOptgroups,
-} from '../common/util';
+} from '../common/util.js';
 
 export interface StringGrouplistInputParams extends TP.BaseInputParams {
 	optgroups: GrouplistParamsOptgroups<string>;
@@ -36,18 +37,17 @@ export const GrouplistStringInputPlugin: TP.InputBindingPlugin<
 		if (typeof value !== 'string') {
 			return null;
 		}
-		const p = TP.ParamsParsers;
-		const result = TP.parseParams<StringGrouplistInputParams>(params, {
+		const result = parseRecord<StringGrouplistInputParams>(params, (p) => ({
 			optgroups: p.required.custom<GrouplistParamsOptgroups<string>>(
-				parseGrouplistOptgroups,
+				parseGrouplistOptgroups(p),
 			),
 			view: p.required.constant('grouplist'),
-		});
+		}));
 		return result
 			? {
 					initialValue: value,
 					params: result,
-			  }
+				}
 			: null;
 	},
 	binding: {

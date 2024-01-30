@@ -1,14 +1,24 @@
-import * as TP from '@tweakpane/core';
+import {
+	BaseBladeParams,
+	BladePlugin,
+	createValue,
+	LabeledValueBladeController,
+	LabelPropsObject,
+	MicroParser,
+	parseRecord,
+	ValueMap,
+} from '@tweakpane/core';
 
-import {GrouplistController} from '../common/controller';
-import type {GrouplistParamsOptgroups} from '../common/params';
+import {GrouplistController} from '../common/controller.js';
+import type {GrouplistParamsOptgroups} from '../common/params.js';
 import {
 	normalizeGrouplistOptgroups,
 	parseGrouplistOptgroups,
-} from '../common/util';
-import {GrouplistApi} from './api';
+} from '../common/util.js';
+import {GrouplistApi} from './api.js';
+import { Semver } from "tweakpane";
 
-export interface GrouplistBladeParams<T> extends TP.BaseBladeParams {
+export interface GrouplistBladeParams<T> extends BaseBladeParams {
 	optgroups: GrouplistParamsOptgroups<T>;
 	value: T;
 	view: 'grouplist';
@@ -16,46 +26,48 @@ export interface GrouplistBladeParams<T> extends TP.BaseBladeParams {
 	label?: string;
 }
 
-export const GrouplistBladePlugin = (function <T>(): TP.BladePlugin<
+export const GrouplistBladePlugin = (function <T>(): BladePlugin<
 	GrouplistBladeParams<T>
 > {
 	return {
 		id: 'grouplist',
 		type: 'blade',
+		core: new Semver('2.0.0'),
 		accept(params) {
-			const p = TP.ParamsParsers;
-			const result = TP.parseParams<GrouplistBladeParams<T>>(params, {
+			const result = parseRecord<GrouplistBladeParams<T>>(params, (p) => ({
 				optgroups: p.required.custom<GrouplistParamsOptgroups<T>>(
-					parseGrouplistOptgroups,
+					parseGrouplistOptgroups(p),
 				),
-				value: p.required.raw as TP.ParamsParser<T>,
+				value: p.required.raw as MicroParser<T>,
 				view: p.required.constant('grouplist'),
 
 				label: p.optional.string,
-			});
+			}));
 			return result ? {params: result} : null;
 		},
 		controller(args) {
-			const ic = new GrouplistController(args.document, {
-				props: TP.ValueMap.fromObject({
+			const v = createValue(args.params.value);
+			const vc = new GrouplistController(args.document, {
+				props: ValueMap.fromObject({
 					optgroups: normalizeGrouplistOptgroups<T>(args.params.optgroups),
 				}),
-				value: TP.createValue(args.params.value),
+				value: createValue(args.params.value),
 				viewProps: args.viewProps,
 			});
-			return new TP.LabeledValueController<T, GrouplistController<T>>(
+			return new LabeledValueBladeController<T, GrouplistController<T>>(
 				args.document,
 				{
 					blade: args.blade,
-					props: TP.ValueMap.fromObject({
+					props: ValueMap.fromObject({
 						label: args.params.label,
-					}),
-					valueController: ic,
+					} as LabelPropsObject),
+					value: v,
+					valueController: vc,
 				},
 			);
 		},
 		api(args) {
-			if (!(args.controller instanceof TP.LabeledValueController)) {
+			if (!(args.controller instanceof LabeledValueBladeController)) {
 				return null;
 			}
 			if (!(args.controller.valueController instanceof GrouplistController)) {

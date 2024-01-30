@@ -1,21 +1,30 @@
-import * as TP from '@tweakpane/core';
+import {
+	bindValueMap,
+	ClassName,
+	createSvgIconElement,
+	ListItem,
+	Value,
+	ValueMap,
+	View,
+	ViewProps,
+} from '@tweakpane/core';
 
-export type GrouplistProps<T> = TP.ValueMap<{
-	optgroups: TP.ListItem<TP.ListItem<T>[]>[];
+export type GrouplistProps<T> = ValueMap<{
+	optgroups: ListItem<ListItem<T>[]>[];
 }>;
 
 interface Config<T> {
 	props: GrouplistProps<T>;
-	value: TP.Value<T>;
-	viewProps: TP.ViewProps;
+	value: Value<T>;
+	viewProps: ViewProps;
 }
 
-const className = TP.ClassName('lst');
+const className = ClassName('lst');
 
-export class GrouplistView<T> implements TP.View {
+export class GrouplistView<T> implements View {
 	public readonly selectElement: HTMLSelectElement;
 	public readonly element: HTMLElement;
-	private readonly value_: TP.Value<T>;
+	private readonly value_: Value<T>;
 	private readonly props_: GrouplistProps<T>;
 
 	constructor(doc: Document, config: Config<T>) {
@@ -29,7 +38,7 @@ export class GrouplistView<T> implements TP.View {
 
 		const selectElement = doc.createElement('select');
 		selectElement.classList.add(className('s'));
-		TP.bindValueMap(this.props_, 'optgroups', (optgroups) => {
+		bindValueMap(this.props_, 'optgroups', (optgroups) => {
 			optgroups.forEach((groupItem, index) => {
 				const optgroupElement = doc.createElement('optgroup');
 				optgroupElement.dataset.index = String(index);
@@ -54,7 +63,7 @@ export class GrouplistView<T> implements TP.View {
 
 		const markElement = doc.createElement('div');
 		markElement.classList.add(className('m'));
-		markElement.appendChild(TP.createSvgIconElement(doc, 'dropdown'));
+		markElement.appendChild(createSvgIconElement(doc, 'dropdown'));
 		this.element.appendChild(markElement);
 
 		config.value.emitter.on('change', this.onValueChange_);

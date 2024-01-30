@@ -1,1 +1,1 @@
-export {GrouplistStringInputPlugin} from './plugin';
+export {GrouplistStringInputPlugin} from './plugin.js';

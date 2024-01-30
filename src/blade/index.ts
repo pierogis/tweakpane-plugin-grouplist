@@ -1,1 +1,1 @@
-export {GrouplistBladePlugin} from './plugin';
+export {GrouplistBladePlugin} from './plugin.js';

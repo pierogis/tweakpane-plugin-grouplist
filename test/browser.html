@@ -26,9 +26,10 @@
 <body>
 	<div class="wrapper">
 	</div>
-	<script src="../node_modules/tweakpane/dist/tweakpane.js"></script>
-	<script src="../dist/tweakpane-plugin-grouplist.js"></script>
-	<script>
+	<script type="module">
+		import * as TweakpaneGrouplistPlugin from '../dist/pierogis-tweakpane-plugin-grouplist.js';
+		import {Pane} from '../node_modules/tweakpane/dist/tweakpane.js';
+
 		const group1Name = 'group 1'
 		const group2Name = 'group 2'
 
@@ -46,7 +47,7 @@
 			'input object style': group1Option1Value,
 			'input array style': group1Option1Value,
 		};
-		const pane = new Tweakpane.Pane({
+		const pane = new Pane({
 			container: document.querySelector('.wrapper'),
 			title: 'group list',
 		});
@@ -95,14 +96,14 @@
 			label: 'blade array style'
 		})
 
-		pane.addInput(params, 'input object style', {
+		pane.addBlade(params, 'input object style', {
 			view: 'grouplist',
 			optgroups: objectOptgroups
 		}).on('change', (ev) => {
 			console.log(ev.value);
 		});
 
-		pane.addInput(params, 'input array style', {
+		pane.addBlade(params, 'input array style', {
 			view: 'grouplist',
 			optgroups: arrayOptgroups
 		}).on('change', (ev) => {
